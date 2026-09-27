@@ -1,0 +1,617 @@
+<Window x:Class="CabSpan.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="CabSpan — Easy Multi-Monitor Setup &amp; 1-Screen Switcher"
+        Width="1180"
+        Height="915"
+        MinWidth="1040"
+        MinHeight="840"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BgDeepBrush}"
+        Foreground="{StaticResource TextPrimaryBrush}">
+
+    <!-- Root: everything stacks vertically, footer is pinned to the bottom -->
+    <DockPanel>
+
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <!-- FOOTER TAB BAR  (DockPanel.Dock="Bottom" so it pins last)      -->
+        <!-- Modelled on the ATS settings bottom icon-tab navigation bar    -->
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <Border DockPanel.Dock="Bottom"
+                Background="#0A0A0C"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="0,1,0,0">
+            <DockPanel Margin="0">
+
+                <!-- Left: attribution + checkboxes -->
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal"
+                            VerticalAlignment="Center" Margin="14,0,0,0">
+                    <TextBlock Text="Built by Justin (@itsjuztin)  •  🧪 Experimental Preview"
+                               FontWeight="SemiBold" FontSize="11.5"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               ToolTip="This is an active experimental community release. Original game files are backed up automatically — use [🐞 Report Bug] if you encounter any quirks!"
+                               VerticalAlignment="Center"/>
+
+                    <CheckBox x:Name="ChkAutoUpdate" Content="Auto-Install Updates"
+                              IsChecked="False" Margin="16,0,0,0"
+                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="11"
+                              VerticalContentAlignment="Center"
+                              ToolTip="When enabled, new updates will automatically install and restart after a 5-second notification window."
+                              Click="OnAutoUpdateToggled"/>
+
+                    <CheckBox x:Name="ChkCrashReporting" Content="Auto-Report Errors"
+                              IsChecked="True" Margin="14,0,0,0"
+                              Foreground="{StaticResource TextSecondaryBrush}" FontSize="11"
+                              VerticalContentAlignment="Center"
+                              ToolTip="Automatically logs errors and sends anonymous crash diagnostics to Discord."
+                              Click="OnCrashReportingToggled"/>
+                </StackPanel>
+
+                <!-- Right: utility buttons -->
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal"
+                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Margin="0,0,10,0">
+                    <Button x:Name="BtnCheckUpdates" Content="🔄 Check Updates"
+                            Style="{StaticResource FooterPillButtonStyle}"
+                            ToolTip="Check GitHub Releases for a newer version"
+                            Click="OnCheckUpdatesClick"/>
+                    <Button x:Name="BtnSuggestFeature" Content="💡 Suggest Feature"
+                            Style="{StaticResource FooterPillButtonStyle}"
+                            ToolTip="Have an idea or feature request? Send it directly to the Discord suggestions channel!"
+                            Click="OnSuggestFeatureClick"/>
+                    <Button x:Name="BtnReportBug" Content="🐞 Report Bug"
+                            Style="{StaticResource FooterPillButtonStyle}"
+                            ToolTip="Report a visual/math bug or alignment issue"
+                            Click="OnReportBugClick"/>
+                    <Button x:Name="BtnOpenErrorLog" Content="📋 Error Log"
+                            Style="{StaticResource FooterPillButtonStyle}"
+                            ToolTip="Open local error log folder (%AppData%\CabSpan\logs)"
+                            Click="OnOpenErrorLogClick"/>
+                    <Button Content="💻 GitHub" Style="{StaticResource FooterPillButtonStyle}"
+                            Tag="https://github.com/itsjuztin/CabSpan"
+                            Click="OnExternalLinkClick"/>
+                    <Button Content="💬 Discord" Style="{StaticResource FooterPillButtonStyle}"
+                            Tag="https://discord.gg/JjUFYu3Jff"
+                            Click="OnExternalLinkClick"/>
+                    <Button Content="☕ Ko-fi" Style="{StaticResource FooterPillButtonStyle}"
+                            Tag="https://ko-fi.com/itsjuztin"
+                            Click="OnExternalLinkClick"/>
+                </StackPanel>
+
+                <!-- Centre filler (keeps left/right from colliding on narrow windows) -->
+                <Border/>
+            </DockPanel>
+        </Border>
+
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <!-- MAIN SCROLL AREA                                                -->
+        <!-- ════════════════════════════════════════════════════════════════ -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <Grid Margin="16,10,16,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>  <!-- 0: Update banner  -->
+                    <RowDefinition Height="Auto"/>  <!-- 1: Brand + Top Welcome Directive Banner -->
+                    <RowDefinition Height="Auto"/>  <!-- 2: STEP 1 — Game Targets -->
+                    <RowDefinition Height="*"/>     <!-- 3: STEP 2 — Monitor Canvas -->
+                    <RowDefinition Height="Auto"/>  <!-- 4: STEP 3 — Sliders -->
+                    <RowDefinition Height="Auto"/>  <!-- 5: STEP 4 — Actions -->
+                </Grid.RowDefinitions>
+
+                <!-- ──────────────────────────────────────────────────── -->
+                <!-- 0. UPDATE NOTIFICATION BANNER                        -->
+                <!-- ──────────────────────────────────────────────────── -->
+                <Border x:Name="UpdateNotificationBanner" Grid.Row="0"
+                        Visibility="Collapsed"
+                        Background="#1C1800"
+                        BorderBrush="{StaticResource GoldDimBrush}"
+                        BorderThickness="1"
+                        CornerRadius="2" Padding="14,9" Margin="0,0,0,8">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal"
+                                    VerticalAlignment="Center" Margin="14,0,0,0">
+                            <Button x:Name="BtnUpdateNowBanner" Content="⚡ Update &amp; Restart Now"
+                                    Style="{StaticResource PrimaryCyanButtonStyle}"
+                                    Padding="12,6" FontSize="11" Margin="0,0,7,0"
+                                    Click="OnUpdateNowBannerClick"/>
+                            <Button x:Name="BtnAlwaysUpdateBanner" Content="Always Update"
+                                    Style="{StaticResource AmberActionButtonStyle}"
+                                    Padding="12,6" FontSize="11" Margin="0,0,7,0"
+                                    ToolTip="Enables Auto-Update and installs this update now."
+                                    Click="OnAlwaysUpdateBannerClick"/>
+                            <Button x:Name="BtnSilenceUpdateWeek" Content="Silence 1 Week"
+                                    Style="{StaticResource SecondarySlateButtonStyle}"
+                                    Padding="11,6" FontSize="11" Margin="0,0,5,0"
+                                    ToolTip="Hides update alerts for 7 days."
+                                    Click="OnSilenceUpdateWeekClick"/>
+                            <Button Content="✕" Style="{StaticResource SecondarySlateButtonStyle}"
+                                    Padding="8,5"
+                                    ToolTip="Dismiss for this session"
+                                    Click="OnDismissUpdateBannerClick"/>
+                        </StackPanel>
+
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock x:Name="TxtUpdateBannerTitle"
+                                       Text="🚀 New Update Ready: CabSpan v1.1.0"
+                                       FontSize="12.5" FontWeight="Bold"
+                                       Foreground="{StaticResource GoldLightBrush}"/>
+                            <TextBlock x:Name="TxtUpdateBannerNotes"
+                                       Text="Hands-free update ready — downloads &amp; installs automatically."
+                                       FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"
+                                       Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <!-- ──────────────────────────────────────────────────── -->
+                <!-- 1. HEADER — brand · wizard/help · TOP WELCOME BANNER -->
+                <!-- ──────────────────────────────────────────────────── -->
+                <Border Grid.Row="1" Style="{StaticResource DarkCardStyle}"
+                        Padding="16,10" Margin="0,0,0,7">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                            <GradientStop Color="#1C1A22" Offset="0"/>
+                            <GradientStop Color="#141316" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <StackPanel>
+                        <DockPanel>
+                            <!-- Brand wordmark + subtitle -->
+                            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="🚛 CAB" FontSize="21" FontWeight="Black"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           VerticalAlignment="Center"/>
+                                <TextBlock Text="SPAN" FontSize="21" FontWeight="Black"
+                                           Foreground="{StaticResource GoldAccentBrush}"
+                                           VerticalAlignment="Center"/>
+
+                                <!-- Version badge -->
+                                <Border Background="{StaticResource RowSurfaceBrush}"
+                                        BorderBrush="{StaticResource BorderSubtleBrush}"
+                                        BorderThickness="1" CornerRadius="2"
+                                        Padding="7,2" Margin="8,0,6,0"
+                                        VerticalAlignment="Center">
+                                    <TextBlock x:Name="TxtHeaderVersion" Text="v1.0.0"
+                                               FontSize="10" FontWeight="Bold"
+                                               Foreground="{StaticResource TextSecondaryBrush}"/>
+                                </Border>
+
+                                <!-- Experimental Preview badge -->
+                                <Border Background="#261E06"
+                                        BorderBrush="{StaticResource GoldDimBrush}"
+                                        BorderThickness="1" CornerRadius="2"
+                                        Padding="7,2" Margin="0,0,12,0"
+                                        VerticalAlignment="Center"
+                                        ToolTip="CabSpan is an active experimental community preview. Every multi-monitor rig is unique — your original game config is 100% backed up automatically, and you can report any quirks via [🐞 Report Bug] in the bottom bar!">
+                                    <TextBlock Text="🧪 EXPERIMENTAL PREVIEW"
+                                               FontSize="9.5" FontWeight="ExtraBold"
+                                               Foreground="{StaticResource GoldLightBrush}"/>
+                                </Border>
+
+                                <TextBlock Text="Stretch your truck cab across multiple monitors — or switch back to 1 screen in one click."
+                                           FontSize="11.5" Foreground="{StaticResource TextSecondaryBrush}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+
+                            <!-- Right: Guided Setup & Help buttons -->
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal"
+                                        HorizontalAlignment="Right" VerticalAlignment="Center">
+                                <Button x:Name="BtnRedoGuidedSetup"
+                                        Content="🧭 Redo Guided Setup"
+                                        Style="{StaticResource SecondarySlateButtonStyle}"
+                                        Foreground="{StaticResource GoldLightBrush}"
+                                        Padding="10,5" FontSize="11.5" Margin="0,0,6,0"
+                                        ToolTip="Re-run the step-by-step Guided Setup Wizard"
+                                        Click="OnRedoGuidedSetupClick"/>
+                                <Button x:Name="BtnHowItWorks"
+                                        Content="❓ How It Works"
+                                        Style="{StaticResource SecondarySlateButtonStyle}"
+                                        Foreground="{StaticResource GoldLightBrush}"
+                                        Padding="10,5" FontSize="11.5"
+                                        ToolTip="Open a plain-English guide explaining how CabSpan works"
+                                        Click="OnHowItWorksClick"/>
+                            </StackPanel>
+
+                            <Border/>
+                        </DockPanel>
+
+                        <!-- TOP WELCOME / DIRECTIVE BANNER (visible immediately at the top of the window) -->
+                        <Border Margin="0,8,0,0"
+                                Background="#1A1600"
+                                BorderBrush="{StaticResource GoldDimBrush}"
+                                BorderThickness="2,1,1,1"
+                                CornerRadius="1" Padding="12,6">
+                            <TextBlock x:Name="TxtWelcomeBanner"
+                                       FontSize="11.5" Foreground="{StaticResource GoldLightBrush}"
+                                       FontWeight="SemiBold" TextWrapping="Wrap" LineHeight="17.5">
+                                <Run Text="🚛 Welcome! Follow Steps 1–3 below, then click "/><Run FontWeight="Bold" Text="[⚡ Apply Multi-Screen Setup]"/><Run Text=" in Step 4 before starting your game. "/>
+                                <Run Foreground="{StaticResource TextSecondaryBrush}" FontWeight="Normal"
+                                     Text="🧪 Early Experimental Release: Every multi-monitor &amp; GPU setup is unique, so occasional quirks may happen — your original game settings are 100% backed up via [↺ Undo / Restore Default], and clicking [🐞 Report Bug] below helps us dial it in!"/>
+                            </TextBlock>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- ──────────────────────────────────────────────────── -->
+                <!-- 2. STEP 1 — CHOOSE YOUR GAME TARGETS                 -->
+                <!-- ──────────────────────────────────────────────────── -->
+                <Border Grid.Row="2" Style="{StaticResource DarkCardStyle}"
+                        Margin="0,0,0,7">
+                    <StackPanel>
+                        <Border Background="#1A1820"
+                                BorderBrush="{StaticResource BorderSubtleBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="16,8">
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Left"
+                                           Text="STEP 1 — PICK YOUR GAME(S)   ·   CHECK WHICH SIMULATOR(S) TO UPDATE"
+                                           FontSize="9.5" FontWeight="Bold"
+                                           Foreground="{StaticResource GoldAccentBrush}"
+                                           VerticalAlignment="Center"/>
+                                <TextBlock DockPanel.Dock="Right"
+                                           Text="Badges show each game's current saved mode"
+                                           FontSize="10.5" Foreground="{StaticResource TextSecondaryBrush}"
+                                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                <Border/>
+                            </DockPanel>
+                        </Border>
+
+                        <DockPanel Margin="16,8,16,8">
+                            <TextBlock DockPanel.Dock="Left"
+                                       Text="Apply settings to:"
+                                       FontSize="12" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       VerticalAlignment="Center" Margin="0,0,14,0"/>
+
+                            <WrapPanel VerticalAlignment="Center">
+                                <!-- ATS target row -->
+                                <Border Background="{StaticResource RowAltBrush}"
+                                        BorderBrush="{StaticResource BorderSubtleBrush}"
+                                        BorderThickness="1" CornerRadius="2"
+                                        Padding="10,5" Margin="0,0,8,0"
+                                        ToolTip="Check to apply settings to American Truck Simulator">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <CheckBox x:Name="ChkAts" Content="American Truck Simulator"
+                                                  Foreground="{StaticResource TextPrimaryBrush}"
+                                                  FontSize="12" FontWeight="SemiBold"
+                                                  VerticalContentAlignment="Center"
+                                                  Checked="OnGameTargetChanged"
+                                                  Unchecked="OnGameTargetChanged"/>
+                                        <Border x:Name="AtsStatusPill"
+                                                CornerRadius="2" Padding="7,2" Margin="8,0,0,0"
+                                                Background="#1C1800"
+                                                BorderBrush="{StaticResource GoldDimBrush}"
+                                                BorderThickness="1">
+                                            <TextBlock x:Name="TxtAtsStatus"
+                                                       Text="🖥️ 1-Screen (Normal)"
+                                                       FontSize="10" FontWeight="Bold"
+                                                       Foreground="{StaticResource GoldLightBrush}"/>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- ETS2 target row -->
+                                <Border Background="{StaticResource RowAltBrush}"
+                                        BorderBrush="{StaticResource BorderSubtleBrush}"
+                                        BorderThickness="1" CornerRadius="2"
+                                        Padding="10,5" Margin="0,0,8,0"
+                                        ToolTip="Check to apply settings to Euro Truck Simulator 2">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <CheckBox x:Name="ChkEts2" Content="Euro Truck Simulator 2"
+                                                  Foreground="{StaticResource TextPrimaryBrush}"
+                                                  FontSize="12" FontWeight="SemiBold"
+                                                  VerticalContentAlignment="Center"
+                                                  Checked="OnGameTargetChanged"
+                                                  Unchecked="OnGameTargetChanged"/>
+                                        <Border x:Name="Ets2StatusPill"
+                                                CornerRadius="2" Padding="7,2" Margin="8,0,0,0"
+                                                Background="#1C1800"
+                                                BorderBrush="{StaticResource GoldDimBrush}"
+                                                BorderThickness="1">
+                                            <TextBlock x:Name="TxtEts2Status"
+                                                       Text="🖥️ 1-Screen (Normal)"
+                                                       FontSize="10" FontWeight="Bold"
+                                                       Foreground="{StaticResource GoldLightBrush}"/>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Both Games toggle -->
+                                <Border Background="{StaticResource RowAltBrush}"
+                                        BorderBrush="{StaticResource GoldDimBrush}"
+                                        BorderThickness="1" CornerRadius="2"
+                                        Padding="10,5"
+                                        ToolTip="Check to apply changes to both games simultaneously">
+                                    <CheckBox x:Name="ChkBoth" Content="Both Games"
+                                              Foreground="{StaticResource GoldAccentBrush}"
+                                              FontWeight="Bold" FontSize="12"
+                                              VerticalContentAlignment="Center"
+                                              Click="OnBothCheckedChanged"/>
+                                </Border>
+                            </WrapPanel>
+                        </DockPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- ──────────────────────────────────────────────────── -->
+                <!-- 3. STEP 2 — MONITOR CANVAS SECTION                   -->
+                <!-- ──────────────────────────────────────────────────── -->
+                <Border Grid.Row="3" Style="{StaticResource DarkCardStyle}"
+                        Margin="0,0,0,7" MinHeight="175">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Section label bar -->
+                        <Border Grid.Row="0"
+                                Background="#1A1820"
+                                BorderBrush="{StaticResource BorderSubtleBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="16,8,16,8">
+                            <DockPanel>
+                                <StackPanel DockPanel.Dock="Left">
+                                    <!-- ATS-style uppercase gold label -->
+                                    <TextBlock Text="STEP 2 — SELECT YOUR DRIVING SCREENS &amp; STEERING WHEEL POSITION"
+                                               FontSize="9.5" FontWeight="Bold"
+                                               Foreground="{StaticResource GoldAccentBrush}"
+/>
+                                    <TextBlock Text="Click any screen to toggle USED FOR DRIVING / KEPT FREE FOR DESKTOP. Click [★ Put Steering Wheel Here] on the screen in front of you."
+                                               FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"
+                                               Margin="0,2,0,0"/>
+                                </StackPanel>
+
+                                <Button DockPanel.Dock="Right" x:Name="BtnRescanMonitors"
+                                        Content="🔄 Refresh Screens"
+                                        Style="{StaticResource SecondarySlateButtonStyle}"
+                                        Foreground="{StaticResource GoldLightBrush}"
+                                        Padding="10,5" FontSize="11.5"
+                                        VerticalAlignment="Center"
+                                        ToolTip="Plugged in or rearranged a monitor? Click to re-detect."
+                                        Click="OnRescanMonitorsClick"/>
+                                <Border/>
+                            </DockPanel>
+                        </Border>
+
+                        <!-- Status info bar (like the ATS info message at bottom of panels) -->
+                        <Border Grid.Row="1"
+                                Background="#1A1600"
+                                BorderBrush="{StaticResource GoldDimBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="16,5">
+                            <TextBlock x:Name="TxtMonitorSummary"
+                                       Text="Detecting screens…"
+                                       FontSize="11.5" FontWeight="SemiBold"
+                                       Foreground="{StaticResource GoldLightBrush}"/>
+                        </Border>
+
+                        <!-- Canvas area — pure black interior like ATS map background -->
+                        <Border Grid.Row="2"
+                                Background="#0A0A0C"
+                                ClipToBounds="True">
+                            <Canvas x:Name="MonitorCanvas"
+                                    SizeChanged="OnMonitorCanvasSizeChanged"/>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- ──────────────────────────────────────────────────── -->
+                <!-- 4. STEP 3 — SLIDERS (Fine-tune)                      -->
+                <!-- ──────────────────────────────────────────────────── -->
+                <Border Grid.Row="4" Style="{StaticResource DarkCardStyle}"
+                        Margin="0,0,0,7">
+                    <StackPanel>
+
+                        <!-- Section label -->
+                        <Border Background="#1A1820"
+                                BorderBrush="{StaticResource BorderSubtleBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="16,8">
+                            <TextBlock Text="STEP 3 — FINE-TUNE MONITOR BORDERS &amp; DESK ANGLE   ·   OPTIONAL"
+                                       FontSize="9.5" FontWeight="Bold"
+                                       Foreground="{StaticResource GoldAccentBrush}"
+/>
+                        </Border>
+
+                        <!-- Row 1: Border Gap slider (matches ATS audio row layout) -->
+                        <Border BorderBrush="{StaticResource BorderSubtleBrush}"
+                                BorderThickness="0,0,0,1">
+                            <StackPanel Margin="16,10,16,8">
+                                <DockPanel Margin="0,0,0,6">
+                                    <TextBlock DockPanel.Dock="Left"
+                                               Text="Screen Border Gap (Plastic Frame Size)"
+                                               FontSize="12.5" FontWeight="SemiBold"
+                                               Foreground="{StaticResource TextPrimaryBrush}"
+                                               VerticalAlignment="Center"/>
+                                    <!-- Value readout — monospace, gold, right-aligned -->
+                                    <Border DockPanel.Dock="Right"
+                                            Background="{StaticResource InputSurfaceBrush}"
+                                            BorderBrush="{StaticResource BorderSubtleBrush}"
+                                            BorderThickness="1" CornerRadius="1"
+                                            Padding="10,2" Margin="16,0,0,0">
+                                        <TextBlock x:Name="TxtBezelGapValue"
+                                                   Text="2.5° (Standard Frame)"
+                                                   FontFamily="Consolas"
+                                                   FontSize="11.5" FontWeight="Bold"
+                                                   Foreground="{StaticResource GoldLightBrush}"
+                                                   HorizontalAlignment="Right"/>
+                                    </Border>
+                                    <Border/>
+                                </DockPanel>
+                                <Slider x:Name="SliderBezelGap"
+                                        Style="{StaticResource AtsSliderStyle}"
+                                        Minimum="0.0" Maximum="6.0" Value="2.5"
+                                        TickFrequency="0.1" IsSnapToTickEnabled="True"
+                                        ValueChanged="OnGeometrySliderValueChanged"/>
+                                <TextBlock Text="Hides the plastic borders between screens so roads and mirrors line up naturally across the gap. 2.5° fits most monitors."
+                                           FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"
+                                           Margin="0,6,0,0" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Row 2: Side Angle slider -->
+                        <StackPanel Margin="16,10,16,10">
+                            <DockPanel Margin="0,0,0,6">
+                                <TextBlock DockPanel.Dock="Left"
+                                           Text="Side Screen Angle (Flat vs. Angled)"
+                                           FontSize="12.5" FontWeight="SemiBold"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           VerticalAlignment="Center"/>
+                                <Border DockPanel.Dock="Right"
+                                        Background="{StaticResource InputSurfaceBrush}"
+                                        BorderBrush="{StaticResource BorderSubtleBrush}"
+                                        BorderThickness="1" CornerRadius="1"
+                                        Padding="10,2" Margin="16,0,0,0">
+                                    <TextBlock x:Name="TxtSideAngleValue"
+                                               Text="0.0° (Flat Line)"
+                                               FontFamily="Consolas"
+                                               FontSize="11.5" FontWeight="Bold"
+                                               Foreground="{StaticResource GoldLightBrush}"
+                                               HorizontalAlignment="Right"/>
+                                </Border>
+                                <Border/>
+                            </DockPanel>
+                            <Slider x:Name="SliderSideAngle"
+                                    Style="{StaticResource AtsSliderStyle}"
+                                    Minimum="0.0" Maximum="45.0" Value="0.0"
+                                    TickFrequency="0.5" IsSnapToTickEnabled="True"
+                                    ValueChanged="OnGeometrySliderValueChanged"/>
+                            <TextBlock Text="Leave at 0° if your monitors sit flat side-by-side. Slide higher (15°–45°) if your side screens are angled inward toward your seat."
+                                       FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"
+                                       Margin="0,6,0,0" TextWrapping="Wrap"/>
+                        </StackPanel>
+
+                    </StackPanel>
+                </Border>
+
+                <!-- ──────────────────────────────────────────────────── -->
+                <!-- 5. STEP 4 — ACTION BUTTONS + LIVE STATUS STRIP       -->
+                <!-- ──────────────────────────────────────────────────── -->
+                <Border Grid.Row="5" Style="{StaticResource DarkCardStyle}">
+                    <StackPanel>
+
+                        <!-- Section label -->
+                        <Border Background="#1A1820"
+                                BorderBrush="{StaticResource BorderSubtleBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="16,8">
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Left"
+                                           Text="STEP 4 — SAVE CHANGES TO YOUR GAME   ·   SAVES PERMANENTLY TO YOUR GAME FILES"
+                                           FontSize="9.5" FontWeight="Bold"
+                                           Foreground="{StaticResource GoldAccentBrush}"
+                                           VerticalAlignment="Center"/>
+                                <TextBlock DockPanel.Dock="Right"
+                                           Text="Gold button shows your currently active saved mode"
+                                           FontSize="10.5" Foreground="{StaticResource TextSecondaryBrush}"
+                                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                <Border/>
+                            </DockPanel>
+                        </Border>
+
+                        <!-- 2 × 2 action button grid -->
+                        <Grid Margin="12,10,12,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1.25*"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition Width="1.2*"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition Width="1.1*"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition Width="0.95*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Primary: Apply Multi-Screen (dynamically Gold when Multi-Screen is active) -->
+                            <Button x:Name="BtnApplyMultiMonitor" Grid.Column="0"
+                                    Style="{StaticResource PrimaryCyanButtonStyle}"
+                                    Padding="12,10"
+                                    ToolTip="Writes your multi-screen camera &amp; FOV settings permanently into your game files. You do not need to click this again unless you switch back to 1 screen or change sliders."
+                                    Click="OnApplyMultiMonitorClick">
+                                <StackPanel>
+                                    <TextBlock x:Name="TxtBtnMultiTitle"
+                                               Text="⚡ Apply Multi-Screen Setup"
+                                               FontWeight="ExtraBold" FontSize="12.5"
+                                               HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="TxtBtnMultiSub"
+                                               Text="Saves multi-screen mode permanently"
+                                               FontSize="10.5" FontWeight="Normal"
+                                               Opacity="0.78" HorizontalAlignment="Center"
+                                               Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Secondary: Switch to 1 Screen (dynamically Gold when 1-Screen is active) -->
+                            <Button x:Name="BtnSwitchSingleMonitor" Grid.Column="2"
+                                    Style="{StaticResource AmberActionButtonStyle}"
+                                    Padding="12,10"
+                                    ToolTip="Switches your game config back to normal 1-screen mode so your other monitors stay free for desktop apps."
+                                    Click="OnSwitchSingleMonitorClick">
+                                <StackPanel>
+                                    <TextBlock x:Name="TxtBtnSingleTitle"
+                                               Text="🖥️ Switch Back to 1 Screen"
+                                               FontWeight="ExtraBold" FontSize="12.5"
+                                               HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="TxtBtnSingleSub"
+                                               Text="Play on 1 screen &amp; free up others"
+                                               FontSize="10.5" FontWeight="Normal"
+                                               Opacity="0.78" HorizontalAlignment="Center"
+                                               Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Utility: Steam Auto-Switch -->
+                            <Button x:Name="BtnCopySteamLaunch" Grid.Column="4"
+                                    Style="{StaticResource SecondarySlateButtonStyle}"
+                                    Padding="10,10"
+                                    ToolTip="100% Optional: Runs CabSpan invisibly for 1 second when you hit Play in Steam to auto-detect Surround/Eyefinity or stretch your borderless window."
+                                    Click="OnCopySteamLaunchOptionClick">
+                                <StackPanel>
+                                    <TextBlock Text="📋 Optional: Steam Auto-Launch"
+                                               Foreground="{StaticResource GoldLightBrush}"
+                                               FontWeight="Bold" FontSize="12"
+                                               HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Auto-switches &amp; spans on Steam Play"
+                                               FontSize="10.5" Opacity="0.85"
+                                               HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Button>
+
+                            <!-- Utility: Undo -->
+                            <Button x:Name="BtnRestoreBackup" Grid.Column="6"
+                                    Style="{StaticResource SecondarySlateButtonStyle}"
+                                    Padding="10,10"
+                                    ToolTip="Restores your original untouched game config backup."
+                                    Click="OnRestoreBackupClick">
+                                <StackPanel>
+                                    <TextBlock Text="↺ Undo / Restore Default"
+                                               Foreground="{StaticResource GoldLightBrush}"
+                                               FontWeight="Bold" FontSize="12"
+                                               HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Reset game settings to original"
+                                               FontSize="10.5" Opacity="0.85"
+                                               HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+
+                        <!-- Bottom status bar — displays live feedback when Apply, Switch, or other actions are pressed -->
+                        <Border Margin="12,8,12,10"
+                                Background="#1A1600"
+                                BorderBrush="{StaticResource GoldDimBrush}"
+                                BorderThickness="2,1,1,1"
+                                CornerRadius="1" Padding="12,6">
+                            <TextBlock x:Name="TxtStatusBanner"
+                                       Text="🧪 Experimental Preview Ready — Your original game settings are backed up automatically (use [↺ Undo / Restore Default] anytime). Spot a quirk on your setup? Click [🐞 Report Bug] below!"
+                                       FontSize="11.5" Foreground="{StaticResource GoldLightBrush}"
+                                       FontWeight="SemiBold" TextWrapping="Wrap"/>
+                        </Border>
+
+                    </StackPanel>
+                </Border>
+
+            </Grid>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

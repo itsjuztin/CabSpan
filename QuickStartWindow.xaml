@@ -1,0 +1,159 @@
+<Window x:Class="CabSpan.QuickStartWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="How CabSpan Works — Easy Step-by-Step Guide"
+        Width="740"
+        Height="660"
+        MinWidth="620"
+        MinHeight="520"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource BgDeepBrush}"
+        Foreground="{StaticResource TextPrimaryBrush}">
+
+    <Grid Margin="22,18,22,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0"
+                Background="{StaticResource PanelSurfaceBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="0,0,0,1"
+                Padding="0,0,0,12" Margin="0,0,0,14">
+            <StackPanel>
+                <TextBlock Text="HOW DOES CABSPAN WORK?"
+                           FontSize="11" FontWeight="Bold"
+                           Foreground="{StaticResource GoldAccentBrush}"/>
+                <TextBlock Text="Everything you need to know in plain English — no computer degree required."
+                           FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Scrollable Guide Cards -->
+        <ScrollViewer x:Name="GuideScrollViewer" Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto" Padding="0,0,8,0">
+            <StackPanel>
+
+                <!-- EXPERIMENTAL PREVIEW & SAFETY BANNER -->
+                <Border Style="{StaticResource GoldInfoBannerStyle}" Padding="14,10" Margin="0,0,0,8">
+                    <TextBlock TextWrapping="Wrap" FontSize="12.5" Foreground="{StaticResource TextSecondaryBrush}" LineHeight="19">
+                        <Run FontWeight="ExtraBold" Foreground="{StaticResource GoldLightBrush}">🧪 Experimental Community Preview (v1.0): </Run>
+                        <Run Text="Every multi-monitor desk, resolution mix, and GPU driver setup is a little different, so please expect occasional bugs or edge cases as we continue improving CabSpan! Your original game settings are "/>
+                        <Run FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}">100% backed up automatically</Run>
+                        <Run Text=" (click "/><Run FontWeight="Bold" Foreground="{StaticResource GoldLightBrush}">↺ Undo / Restore Default</Run><Run Text=" anytime to revert in one click). If something acts weird on your rig, click "/><Run FontWeight="Bold" Foreground="{StaticResource GoldLightBrush}">🐞 Report Bug</Run><Run Text=" on the dashboard so we can fix it!"/>
+                    </TextBlock>
+                </Border>
+
+                <!-- CARD 1: TIMELINE & DO I NEED TO RUN THIS EVERY TIME? -->
+                <Border Style="{StaticResource DarkCardStyle}" Margin="0,0,0,8">
+                    <StackPanel>
+                        <Border Background="{StaticResource RowSurfaceBrush}"
+                                BorderBrush="{StaticResource BorderSubtleBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="16,8" Margin="-0,-0,-0,10">
+                            <TextBlock Text="1 — TIMELINE: DO I NEED TO OPEN CABSPAN EVERY TIME I PLAY?"
+                                       FontSize="9.5" FontWeight="Bold"
+                                       Foreground="{StaticResource GoldAccentBrush}"/>
+                        </Border>
+                        <StackPanel Margin="16,0,16,14">
+                            <TextBlock TextWrapping="Wrap" FontSize="13"
+                                       Foreground="{StaticResource TextPrimaryBrush}" LineHeight="21">
+                                <Run FontWeight="Bold" Foreground="{StaticResource GoldLightBrush}">• Do I need to open CabSpan every time I launch the game? </Run>
+                                <Run FontWeight="Bold" Foreground="{StaticResource StatusSuccessBrush}">NO!</Run>
+                                <Run Text=" When you click "/><Run FontWeight="Bold" Foreground="{StaticResource GoldLightBrush}">⚡ Apply Multi-Screen Setup</Run><Run Text=", CabSpan saves your multi-monitor camera math directly into your game's configuration files ("/><Run FontFamily="Consolas" FontSize="12">config.cfg</Run><Run Text=" and "/><Run FontFamily="Consolas" FontSize="12">multimon_config.sii</Run><Run Text="). Those files "/><Run FontWeight="Bold">stay saved permanently on your PC</Run><Run Text="!"/><LineBreak/><LineBreak/>
+                                <Run FontWeight="Bold" Foreground="{StaticResource GoldLightBrush}">• When DO I need to open CabSpan? </Run>
+                                <Run Text="Only when you want to "/><Run FontWeight="Bold">change</Run><Run Text=" something — for example, when you don't feel like using all 3 screens today and want to click "/><Run FontWeight="Bold" Foreground="{StaticResource GoldAccentBrush}">🖥️ Switch Back to 1 Screen</Run><Run Text=", or when you want to adjust your bezel gap slider."/><LineBreak/><LineBreak/>
+                                <Run FontWeight="Bold" Foreground="{StaticResource GoldLightBrush}">• Where does CabSpan happen in the launch timeline? </Run>
+                                <Run Text="Because ATS and ETS2 only read their display config files at the exact moment the game starts up, always click "/><Run FontWeight="Bold">Apply</Run><Run Text=" or "/><Run FontWeight="Bold">Switch Back to 1 Screen</Run><Run Text=" "/><Run FontWeight="Bold" TextDecorations="Underline">before</Run><Run Text=" you launch the game."/>
+                            </TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- CARD 2: STEERING WHEEL & MENUS EXPLAINED -->
+                <Border Style="{StaticResource DarkCardStyle}" Margin="0,0,0,8">
+                    <StackPanel>
+                        <Border Background="{StaticResource RowSurfaceBrush}"
+                                BorderBrush="{StaticResource BorderSubtleBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="16,8" Margin="-0,-0,-0,10">
+                            <TextBlock Text="2 — WHY DO I PICK A 'STEERING WHEEL' SCREEN?"
+                                       FontSize="9.5" FontWeight="Bold"
+                                       Foreground="{StaticResource GoldAccentBrush}"/>
+                        </Border>
+                        <TextBlock Margin="16,0,16,14"
+                                   TextWrapping="Wrap" FontSize="13"
+                                   Foreground="{StaticResource TextSecondaryBrush}" LineHeight="20"
+                                   Text="If you use 2 screens (or 3 screens with an extra monitor on the side), the game normally tries to put the steering wheel right in the middle crack between your monitors! Selecting [★ Put Steering Wheel Here] tells the game which screen is right in front of you so your steering wheel, dashboard gauges, map, and menus stay centered on that screen."/>
+                    </StackPanel>
+                </Border>
+
+                <!-- CARD 3: OPTIONAL STEAM AUTO-SWITCH -->
+                <Border x:Name="SteamGuideCard" Style="{StaticResource DarkCardStyle}" Margin="0,0,0,6">
+                    <StackPanel>
+                        <Border Background="{StaticResource RowSurfaceBrush}"
+                                BorderBrush="{StaticResource BorderSubtleBrush}"
+                                BorderThickness="0,0,0,1"
+                                Padding="16,8" Margin="-0,-0,-0,10">
+                            <TextBlock x:Name="TxtSteamCardHeading"
+                                       Text="3 — HOW THE OPTIONAL 'STEAM AUTO-LAUNCH' COMMAND WORKS"
+                                       FontSize="9.5" FontWeight="Bold"
+                                       Foreground="{StaticResource GoldAccentBrush}"/>
+                        </Border>
+
+                        <StackPanel Margin="16,0,16,14">
+                            <TextBlock TextWrapping="Wrap" FontSize="13"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       LineHeight="20" Margin="0,0,0,10">
+                                <Run Text="What happens when you add "/><Run FontFamily="Consolas" FontSize="12" Foreground="{StaticResource GoldLightBrush}">"...\CabSpan.exe" --auto-launch %command%</Run><Run Text=" to Steam's Launch Options? Every time you click the green "/><Run FontWeight="Bold" Foreground="{StaticResource StatusSuccessBrush}">▶ Play</Run><Run Text=" button in Steam, Steam invisibly runs CabSpan for 1 second right before the game boots up:"/><LineBreak/>
+                                <Run FontWeight="Bold" Foreground="{StaticResource GoldLightBrush}">• For NVIDIA Surround / AMD Eyefinity Users:</Run><Run Text=" CabSpan checks if Surround/Eyefinity is currently turned ON or OFF in Windows. If Surround is ON, it automatically puts your game in Multi-Screen Mode. If you turned Surround OFF for normal desktop use, it automatically switches the game to 1-Screen Mode so it doesn't launch squished!"/><LineBreak/>
+                                <Run FontWeight="Bold" Foreground="{StaticResource GoldLightBrush}">• For Non-Surround / Borderless Window Users:</Run><Run Text=" CabSpan launches the game, waits for the game window to appear, automatically stretches the borderless window across all your selected driving screens, and then closes itself so it uses 0% CPU while you drive."/>
+                            </TextBlock>
+
+                            <!-- Instruction block — ATS info-strip style with gold left border -->
+                            <Border Background="{StaticResource InputSurfaceBrush}"
+                                    BorderBrush="{StaticResource GoldDimBrush}"
+                                    BorderThickness="2,1,1,1"
+                                    CornerRadius="1" Padding="12,10" Margin="0,0,0,12">
+                                <TextBlock TextWrapping="Wrap" FontSize="12.5"
+                                           Foreground="{StaticResource TextPrimaryBrush}" LineHeight="22">
+                                    <Run FontWeight="Bold" Foreground="{StaticResource GoldLightBrush}">1.</Run><Run Text=" Click the "/><Run FontWeight="Bold" Foreground="{StaticResource GoldLightBrush}">📋 Copy Steam Launch Command</Run><Run Text=" button below."/><LineBreak/>
+                                    <Run FontWeight="Bold" Foreground="{StaticResource GoldLightBrush}">2.</Run><Run Text=" Open "/><Run FontWeight="Bold">Steam</Run><Run Text=", right-click "/><Run FontWeight="Bold">American Truck Simulator</Run><Run Text=" (or Euro Truck Simulator 2), and click "/><Run FontWeight="Bold">Properties...</Run><LineBreak/>
+                                    <Run FontWeight="Bold" Foreground="{StaticResource GoldLightBrush}">3.</Run><Run Text=" Find the box labeled "/><Run FontWeight="Bold">Launch Options</Run><Run Text=", right-click inside it, and click "/><Run FontWeight="Bold">Paste (Ctrl+V)</Run><Run Text=". Close the window and you're done!"/>
+                                </TextBlock>
+                            </Border>
+
+                            <DockPanel>
+                                <Button x:Name="BtnCopySteamInGuide"
+                                        Content="📋 Copy Steam Launch Command"
+                                        Style="{StaticResource SecondarySlateButtonStyle}"
+                                        Padding="14,7"
+                                        Click="OnCopySteamInGuideClick"/>
+                                <TextBlock x:Name="TxtSteamCopyStatus"
+                                           VerticalAlignment="Center" Margin="12,0,0,0"
+                                           FontSize="12" FontWeight="SemiBold"
+                                           Foreground="{StaticResource GoldLightBrush}"/>
+                            </DockPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Footer -->
+        <DockPanel Grid.Row="2" Margin="0,14,0,0">
+            <TextBlock VerticalAlignment="Center" FontSize="12"
+                       Foreground="{StaticResource TextSecondaryBrush}"
+                       Text="Tip: Your original game settings are always backed up safely and can be restored in 1 click."/>
+            <Button Content="✓ Got It — Back to Setup"
+                    DockPanel.Dock="Right" HorizontalAlignment="Right"
+                    Style="{StaticResource PrimaryCyanButtonStyle}"
+                    Padding="20,9"
+                    Click="OnCloseGuideClick"/>
+        </DockPanel>
+    </Grid>
+</Window>

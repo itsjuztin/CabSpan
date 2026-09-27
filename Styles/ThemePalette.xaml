@@ -1,0 +1,200 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!--  CENTRALIZED CABSPAN THEME PALETTE (CSS-Style Global Tokens)        -->
+    <!--  Edit colors here to re-theme every window and control at once.     -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+
+    <!-- Background Surfaces -->
+    <SolidColorBrush x:Key="BgDeepBrush"        Color="#0E0E10"/>
+    <SolidColorBrush x:Key="PanelSurfaceBrush"  Color="#141316"/>
+    <SolidColorBrush x:Key="RowSurfaceBrush"    Color="#1A1820"/>
+    <SolidColorBrush x:Key="RowAltBrush"        Color="#131115"/>
+    <SolidColorBrush x:Key="InputSurfaceBrush"  Color="#0A0A0C"/>
+    <SolidColorBrush x:Key="GoldBannerBgBrush"  Color="#1A1600"/>
+    <SolidColorBrush x:Key="GoldPillBgBrush"    Color="#1C1800"/>
+    <SolidColorBrush x:Key="ButtonSurfaceBrush" Color="#221F2B"/>
+    <SolidColorBrush x:Key="ButtonHoverBrush"   Color="#302A3B"/>
+
+    <!-- Borders -->
+    <SolidColorBrush x:Key="BorderSubtleBrush"  Color="#252228"/>
+    <SolidColorBrush x:Key="BorderNormalBrush"  Color="#302C38"/>
+
+    <!-- Gold & Status Accents -->
+    <SolidColorBrush x:Key="GoldAccentBrush"    Color="#C8A017"/>
+    <SolidColorBrush x:Key="GoldLightBrush"     Color="#E0BC3A"/>
+    <SolidColorBrush x:Key="GoldDimBrush"       Color="#7A6010"/>
+    <SolidColorBrush x:Key="StatusSuccessBrush" Color="#5CE07A"/>
+
+    <!-- Typography -->
+    <SolidColorBrush x:Key="TextPrimaryBrush"   Color="#E8E4D8"/>
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#8A847C"/>
+    <SolidColorBrush x:Key="TextMutedBrush"     Color="#3E3B44"/>
+    <SolidColorBrush x:Key="TextOnGoldBrush"    Color="#0A0900"/>
+
+    <!-- Legacy Aliases (mapped cleanly to the Gold/Dark theme so nothing turns blue/orange) -->
+    <SolidColorBrush x:Key="CyanAccentBrush"    Color="#C8A017"/>
+    <SolidColorBrush x:Key="AmberAccentBrush"   Color="#E0BC3A"/>
+    <SolidColorBrush x:Key="CardSurfaceBrush"   Color="#141316"/>
+    <SolidColorBrush x:Key="CardBorderBrush"    Color="#252228"/>
+    <SolidColorBrush x:Key="SlateBadgeBrush"    Color="#1A1820"/>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!--  Reusable Card & Callout Box Styles                                 -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <Style x:Key="DarkCardStyle" TargetType="Border">
+        <Setter Property="Background"      Value="{StaticResource PanelSurfaceBrush}"/>
+        <Setter Property="BorderBrush"     Value="{StaticResource BorderSubtleBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius"    Value="2"/>
+        <Setter Property="Padding"         Value="0"/>
+    </Style>
+
+    <Style x:Key="GoldInfoBannerStyle" TargetType="Border">
+        <Setter Property="Background"      Value="{StaticResource GoldBannerBgBrush}"/>
+        <Setter Property="BorderBrush"     Value="{StaticResource GoldDimBrush}"/>
+        <Setter Property="BorderThickness" Value="2,1,1,1"/>
+        <Setter Property="CornerRadius"    Value="2"/>
+        <Setter Property="Padding"         Value="12,8"/>
+    </Style>
+
+    <Style x:Key="SubCardSurfaceStyle" TargetType="Border">
+        <Setter Property="Background"      Value="{StaticResource RowSurfaceBrush}"/>
+        <Setter Property="BorderBrush"     Value="{StaticResource BorderNormalBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius"    Value="2"/>
+        <Setter Property="Padding"         Value="14,10"/>
+    </Style>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!--  Slider — ATS Flat Gold Style                                       -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <Style x:Key="AtsSliderThumbStyle" TargetType="Thumb">
+        <Setter Property="Width"  Value="14"/>
+        <Setter Property="Height" Value="14"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Thumb">
+                    <Rectangle Fill="{StaticResource GoldAccentBrush}" RadiusX="1" RadiusY="1"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="AtsSliderStyle" TargetType="Slider">
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Slider">
+                    <Grid>
+                        <Border Height="3" VerticalAlignment="Center"
+                                Background="{StaticResource BorderNormalBrush}" CornerRadius="0"/>
+                        <Border x:Name="PART_SelectionRange" Height="3" VerticalAlignment="Center"
+                                Background="{StaticResource GoldAccentBrush}" HorizontalAlignment="Left"
+                                CornerRadius="0"/>
+                        <Track x:Name="PART_Track">
+                            <Track.Thumb>
+                                <Thumb Style="{StaticResource AtsSliderThumbStyle}"/>
+                            </Track.Thumb>
+                        </Track>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!--  Button Styles                                                      -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <Style x:Key="PrimaryCyanButtonStyle" TargetType="Button">
+        <Setter Property="Background"      Value="{StaticResource GoldAccentBrush}"/>
+        <Setter Property="Foreground"      Value="{StaticResource TextOnGoldBrush}"/>
+        <Setter Property="FontWeight"      Value="Bold"/>
+        <Setter Property="FontSize"        Value="13"/>
+        <Setter Property="Padding"         Value="16,10"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="BtnBorder"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="2"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="BtnBorder" Property="Background" Value="{StaticResource GoldLightBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="BtnBorder" Property="Background" Value="{StaticResource GoldDimBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="BtnBorder" Property="Background" Value="{StaticResource BorderNormalBrush}"/>
+                            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="AmberActionButtonStyle" TargetType="Button">
+        <Setter Property="Background"      Value="{StaticResource ButtonSurfaceBrush}"/>
+        <Setter Property="Foreground"      Value="{StaticResource TextPrimaryBrush}"/>
+        <Setter Property="BorderBrush"     Value="{StaticResource GoldDimBrush}"/>
+        <Setter Property="BorderThickness" Value="1.5"/>
+        <Setter Property="FontWeight"      Value="SemiBold"/>
+        <Setter Property="FontSize"        Value="13"/>
+        <Setter Property="Padding"         Value="16,10"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="BtnBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="2"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="BtnBorder" Property="Background"  Value="{StaticResource ButtonHoverBrush}"/>
+                            <Setter TargetName="BtnBorder" Property="BorderBrush" Value="{StaticResource GoldLightBrush}"/>
+                            <Setter Property="Foreground" Value="{StaticResource GoldLightBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="BtnBorder" Property="Background" Value="{StaticResource PanelSurfaceBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SecondarySlateButtonStyle" TargetType="Button"
+           BasedOn="{StaticResource AmberActionButtonStyle}">
+        <Setter Property="Background"      Value="{StaticResource ButtonSurfaceBrush}"/>
+        <Setter Property="Foreground"      Value="{StaticResource GoldLightBrush}"/>
+        <Setter Property="BorderBrush"     Value="{StaticResource GoldDimBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="FontWeight"      Value="SemiBold"/>
+    </Style>
+
+    <Style x:Key="FooterPillButtonStyle" TargetType="Button"
+           BasedOn="{StaticResource SecondarySlateButtonStyle}">
+        <Setter Property="Background"      Value="{StaticResource RowSurfaceBrush}"/>
+        <Setter Property="Foreground"      Value="{StaticResource GoldLightBrush}"/>
+        <Setter Property="BorderBrush"     Value="{StaticResource GoldDimBrush}"/>
+        <Setter Property="FontWeight"      Value="SemiBold"/>
+        <Setter Property="FontSize"        Value="11"/>
+        <Setter Property="Padding"         Value="11,5"/>
+        <Setter Property="Margin"          Value="5,0,0,0"/>
+    </Style>
+
+</ResourceDictionary>

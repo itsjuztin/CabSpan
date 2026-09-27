@@ -1,0 +1,218 @@
+<Window x:Class="CabSpan.GuidedSetupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="CabSpan — Step-by-Step Guided Setup &amp; How It Works"
+        Width="920"
+        Height="710"
+        MinWidth="800"
+        MinHeight="640"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BgDeepBrush}"
+        Foreground="{StaticResource TextPrimaryBrush}">
+
+    <Grid Margin="22,16,22,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- TOP STEP PROGRESS BAR -->
+        <Border Grid.Row="0" Style="{StaticResource DarkCardStyle}" Padding="16,11" Margin="0,0,0,12">
+            <DockPanel>
+                <Button DockPanel.Dock="Right" Content="Skip to Dashboard ✕"
+                        Style="{StaticResource SecondarySlateButtonStyle}" Padding="11,5" FontSize="11.5"
+                        VerticalAlignment="Center" Click="OnSkipWizardClick"/>
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="🧭 FIRST-TIME GUIDED SETUP" FontSize="12" FontWeight="ExtraBold" Foreground="{StaticResource GoldLightBrush}"/>
+                        <TextBlock x:Name="TxtStepCounter" Text="  •  STEP 1 OF 4" FontSize="12" FontWeight="ExtraBold" Foreground="{StaticResource GoldAccentBrush}"/>
+                        <Border Background="#261E06" BorderBrush="{StaticResource GoldDimBrush}" BorderThickness="1" CornerRadius="2" Padding="7,1" Margin="10,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="🧪 EXPERIMENTAL PREVIEW" FontSize="9.5" FontWeight="ExtraBold" Foreground="{StaticResource GoldLightBrush}"/>
+                        </Border>
+                    </StackPanel>
+                    <TextBlock x:Name="TxtStepTitle" Text="Welcome! Let's set up your screens in 4 simple steps."
+                               FontSize="17.5" FontWeight="ExtraBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,2,0,0"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- STEP PANELS CONTAINER -->
+        <Border Grid.Row="1" Style="{StaticResource DarkCardStyle}" Padding="20,16" Margin="0,0,0,12">
+            <Grid>
+                <!-- STEP 1: PICK YOUR GAME + HOW IT WORKS -->
+                <StackPanel x:Name="Step1Panel" Visibility="Visible" VerticalAlignment="Center" MaxWidth="720">
+                    <!-- How CabSpan Works Intro Box -->
+                    <Border Style="{StaticResource GoldInfoBannerStyle}" Padding="14,11" Margin="0,0,0,16">
+                        <StackPanel>
+                            <TextBlock Text="💡 How CabSpan Works  •  🧪 Early Experimental Preview" FontSize="13.5" FontWeight="ExtraBold" Foreground="{StaticResource GoldLightBrush}" Margin="0,0,0,4"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="12.5" Foreground="{StaticResource TextSecondaryBrush}" LineHeight="19">
+                                <Run Text="CabSpan calculates your multi-monitor camera angles automatically, keeps your steering wheel centered on your main monitor, and lets you switch back to normal 1-screen play in one click."/><LineBreak/>
+                                <Run FontWeight="SemiBold" Foreground="{StaticResource GoldLightBrush}" Text="🛡️ Safe to Try (Expect Occasional Quirks): "/><Run Text="Because CabSpan is an experimental community tool and every multi-monitor GPU setup is unique, you may occasionally run into a display quirk or edge case. Before CabSpan makes a single change, it saves a complete backup of your original settings ("/><Run FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Text="↺ Undo / Restore Default"/><Run Text=" restores everything in 1 click), and you can report any bugs right from the bottom bar!"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock Text="First, check which truck simulator(s) you play:" FontSize="15" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,10"/>
+
+                    <Border Style="{StaticResource SubCardSurfaceStyle}" Padding="15,12" Margin="0,0,0,10">
+                        <CheckBox x:Name="WizChkAts" IsChecked="True" VerticalContentAlignment="Center">
+                            <StackPanel Margin="8,0,0,0">
+                                <TextBlock Text="American Truck Simulator (ATS)" FontSize="14.5" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                <TextBlock Text="Automatically configures your settings in Documents\American Truck Simulator" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                        </CheckBox>
+                    </Border>
+
+                    <Border Style="{StaticResource SubCardSurfaceStyle}" Padding="15,12">
+                        <CheckBox x:Name="WizChkEts2" IsChecked="True" VerticalContentAlignment="Center">
+                            <StackPanel Margin="8,0,0,0">
+                                <TextBlock Text="Euro Truck Simulator 2 (ETS2)" FontSize="14.5" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                <TextBlock Text="Automatically configures your settings in Documents\Euro Truck Simulator 2" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                            </StackPanel>
+                        </CheckBox>
+                    </Border>
+                </StackPanel>
+
+                <!-- STEP 2: PICK YOUR SCREENS & STEERING WHEEL -->
+                <Grid x:Name="Step2Panel" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <DockPanel Grid.Row="0" Margin="0,0,0,8">
+                        <Button DockPanel.Dock="Right" Content="🔄 Refresh Screens" Style="{StaticResource SecondarySlateButtonStyle}"
+                                Padding="10,5" FontSize="11.5" VerticalAlignment="Top" Click="OnWizRescanClick"/>
+                        <StackPanel>
+                            <TextBlock Text="1. Click each screen box below that you want the truck cab to stretch across (USED FOR DRIVING)."
+                                       FontSize="13" FontWeight="Bold" Foreground="{StaticResource GoldLightBrush}"/>
+                            <TextBlock Text="2. Click [★ Put Steering Wheel Here] on the screen that sits directly in front of your physical steering wheel."
+                                       FontSize="12.5" Foreground="{StaticResource TextSecondaryBrush}" FontWeight="SemiBold" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </DockPanel>
+
+                    <Border Grid.Row="1" Background="{StaticResource InputSurfaceBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="2" ClipToBounds="True">
+                        <Canvas x:Name="WizMonitorCanvas" SizeChanged="OnWizCanvasSizeChanged"/>
+                    </Border>
+
+                    <!-- How Step 2 Works Callout -->
+                    <Border Grid.Row="2" Style="{StaticResource GoldInfoBannerStyle}" Margin="0,8,0,0">
+                        <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" LineHeight="18">
+                            <Run FontWeight="Bold" Foreground="{StaticResource GoldLightBrush}">💡 Why Pick a 'Steering Wheel' Screen?</Run>
+                            <Run Text=" Without this, using 2 monitors (or 3 monitors with an extra side screen) causes the game to put your steering wheel right in the plastic crack between two monitors! Marking "/>
+                            <Run FontWeight="Bold" Foreground="{StaticResource GoldLightBrush}">★ Put Steering Wheel Here</Run>
+                            <Run Text=" locks your steering wheel, dashboard gauges, map, and pause menus to the exact screen in front of you, while keeping any unchecked dark screens free for your desktop."/>
+                        </TextBlock>
+                    </Border>
+                </Grid>
+
+                <!-- STEP 3: BORDERS & DESK ANGLE -->
+                <StackPanel x:Name="Step3Panel" Visibility="Collapsed" VerticalAlignment="Center">
+                    <!-- Bezel Gap -->
+                    <Border Style="{StaticResource SubCardSurfaceStyle}" Padding="16,12" Margin="0,0,0,12">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="1. Plastic Frame Gap Between Your Monitors" FontWeight="Bold" FontSize="14"
+                                           VerticalAlignment="Center" Foreground="{StaticResource GoldLightBrush}"/>
+                                <Border Grid.Column="1" Background="{StaticResource InputSurfaceBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="2" Padding="9,2" Margin="12,0,0,0">
+                                    <TextBlock x:Name="WizTxtBezelVal" Text="2.5° (Standard Frame)" FontFamily="Consolas" FontWeight="ExtraBold" FontSize="12.5"
+                                               HorizontalAlignment="Right" TextAlignment="Right" Foreground="{StaticResource GoldLightBrush}"/>
+                                </Border>
+                            </Grid>
+                            <TextBlock Text="💡 What this does: Just like looking through a real truck window post, this hides a tiny slice of the view behind your plastic monitor frames so highway lines and dashboard edges flow straight across without looking crooked or broken. (2.5° is great for most screens)."
+                                       FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap" LineHeight="17.5" Margin="0,0,0,8"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                <Button Content="No Gap (0.0°)" Style="{StaticResource FooterPillButtonStyle}" Margin="0,0,8,0" Tag="0.0" Click="OnBezelPresetClick"/>
+                                <Button Content="Standard Frame (2.5° - Recommended)" Style="{StaticResource FooterPillButtonStyle}" Margin="0,0,8,0" Tag="2.5" Click="OnBezelPresetClick"/>
+                                <Button Content="Thick Frame (4.0°)" Style="{StaticResource FooterPillButtonStyle}" Tag="4.0" Click="OnBezelPresetClick"/>
+                            </StackPanel>
+                            <Slider x:Name="WizSliderBezel" Style="{StaticResource AtsSliderStyle}" Minimum="0.0" Maximum="6.0" Value="2.5" TickFrequency="0.1" IsSnapToTickEnabled="True" ValueChanged="OnWizSlidersChanged"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Side Angle -->
+                    <Border Style="{StaticResource SubCardSurfaceStyle}" Padding="16,12">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="2. Are Your Side Monitors Flat or Angled Toward You?" FontWeight="Bold" FontSize="14"
+                                           VerticalAlignment="Center" Foreground="{StaticResource GoldLightBrush}"/>
+                                <Border Grid.Column="1" Background="{StaticResource InputSurfaceBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="1" CornerRadius="2" Padding="9,2" Margin="12,0,0,0">
+                                    <TextBlock x:Name="WizTxtAngleVal" Text="0.0° (Flat Line)" FontFamily="Consolas" FontWeight="ExtraBold" FontSize="12.5"
+                                               HorizontalAlignment="Right" TextAlignment="Right" Foreground="{StaticResource GoldLightBrush}"/>
+                                </Border>
+                            </Grid>
+                            <TextBlock Text="💡 What this does: Leave at 0° if your screens sit flat side-by-side along the back of your desk. If your left or right monitors are angled inward toward your chair like a wrap-around cab, pick an angle below so the side mirrors and windows match your real-world view."
+                                       FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap" LineHeight="17.5" Margin="0,0,0,8"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                <Button Content="Flat Side-by-Side (0°)" Style="{StaticResource FooterPillButtonStyle}" Margin="0,0,8,0" Tag="0.0" Click="OnAnglePresetClick"/>
+                                <Button Content="Slightly Angled (15°)" Style="{StaticResource FooterPillButtonStyle}" Margin="0,0,8,0" Tag="15.0" Click="OnAnglePresetClick"/>
+                                <Button Content="Wrap-Around Cab (30°)" Style="{StaticResource FooterPillButtonStyle}" Tag="30.0" Click="OnAnglePresetClick"/>
+                            </StackPanel>
+                            <Slider x:Name="WizSliderAngle" Style="{StaticResource AtsSliderStyle}" Minimum="0.0" Maximum="45.0" Value="0.0" TickFrequency="0.5" IsSnapToTickEnabled="True" ValueChanged="OnWizSlidersChanged"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- STEP 4: SUMMARY, HOW EVERYDAY SWITCHING WORKS & OPTIONAL STEAM SETUP -->
+                <ScrollViewer x:Name="Step4Panel" Visibility="Collapsed" VerticalScrollBarVisibility="Auto" Padding="0,0,6,0">
+                    <StackPanel VerticalAlignment="Center" MaxWidth="760">
+                        <TextBlock Text="🎉 Your Setup Summary:" FontSize="15" FontWeight="ExtraBold"
+                                   Foreground="{StaticResource GoldLightBrush}" Margin="0,0,0,6"/>
+
+                        <Border Style="{StaticResource SubCardSurfaceStyle}" BorderBrush="{StaticResource GoldAccentBrush}" BorderThickness="1.5" Padding="15,10" Margin="0,0,0,12">
+                            <TextBlock x:Name="WizTxtSummary" FontSize="13" Foreground="{StaticResource TextPrimaryBrush}" LineHeight="21" TextWrapping="Wrap"/>
+                        </Border>
+
+                        <!-- Everyday Use Explanation -->
+                        <Border Style="{StaticResource GoldInfoBannerStyle}" Padding="14,10" Margin="0,0,0,12">
+                            <StackPanel>
+                                <TextBlock Text="🖥️ How Everyday Use Works After You Click Finish" FontSize="13.5" FontWeight="ExtraBold"
+                                           Foreground="{StaticResource GoldLightBrush}" Margin="0,0,0,4"/>
+                                <TextBlock TextWrapping="Wrap" FontSize="12.5" Foreground="{StaticResource TextSecondaryBrush}" LineHeight="19">
+                                    <Run Text="• Clicking "/><Run FontWeight="Bold" Foreground="{StaticResource GoldLightBrush}">⚡ Apply Multi-Screen Setup &amp; Finish</Run><Run Text=" below saves these settings permanently to your game files right now so you can launch ATS/ETS2 and drive!"/><LineBreak/>
+                                    <Run Text="• You do "/><Run FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}">NOT</Run><Run Text=" need to open CabSpan every time you play! Next time you open CabSpan, it will go straight to the "/><Run FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}">Main Dashboard</Run><Run Text=", where you can click "/><Run FontWeight="Bold" Foreground="{StaticResource GoldLightBrush}">🖥️ Switch Back to 1 Screen</Run><Run Text=" anytime you only want to play on 1 monitor."/>
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Optional Steam Auto-Switch Card right inside Step 4 -->
+                        <Border Style="{StaticResource SubCardSurfaceStyle}" Padding="14,10">
+                            <StackPanel>
+                                <TextBlock Text="📋 Optional: Want Steam to Auto-Switch or Stretch Your Window?" FontSize="13" FontWeight="ExtraBold"
+                                           Foreground="{StaticResource GoldLightBrush}" Margin="0,0,0,3"/>
+                                <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" LineHeight="18" Margin="0,0,0,8"
+                                           Text="100% Optional: Pasting CabSpan's command into Steam's Launch Options (Right-click game in Steam -> Properties -> Launch Options) tells Steam to run CabSpan invisibly for 1 second when you click Play to auto-detect Surround/Eyefinity or stretch your borderless window:"/>
+                                <DockPanel>
+                                    <Button Content="📋 Copy Steam Command (Optional)" Style="{StaticResource SecondarySlateButtonStyle}"
+                                            Padding="12,5" FontSize="11.5" Click="OnCopySteamInWizardClick"/>
+                                    <TextBlock x:Name="WizTxtSteamStatus" VerticalAlignment="Center" Margin="10,0,0,0"
+                                               FontSize="11.5" FontWeight="SemiBold" Foreground="{StaticResource GoldLightBrush}"/>
+                                </DockPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <!-- FOOTER NAVIGATION BUTTONS -->
+        <DockPanel Grid.Row="2">
+            <Button x:Name="BtnBack" Content="⬅ Back" Style="{StaticResource SecondarySlateButtonStyle}"
+                    Padding="18,10" Visibility="Hidden" Click="OnBackClick"/>
+            <Button x:Name="BtnNextOrFinish" Content="Next: Pick Your Screens ➔" DockPanel.Dock="Right" HorizontalAlignment="Right"
+                    Style="{StaticResource PrimaryCyanButtonStyle}" Padding="24,10" FontSize="13.5"
+                    Click="OnNextOrFinishClick"/>
+        </DockPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,53 @@
+name: Build & Publish Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & Publish CabSpan Release
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build Single-File Release & Run Self-Tests
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          .\publish-release.ps1 -Version $tag -LocalOnly
+          .\dist\CabSpan.exe --test-math
+          if ($LASTEXITCODE -ne 0) { throw "Math self-test failed!" }
+
+          $exeHash = (Get-FileHash -Path ".\dist\CabSpan.exe" -Algorithm SHA256).Hash
+          "EXE_SHA256=$exeHash" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "CabSpan ${{ github.ref_name }} (Experimental Preview)"
+          files: |
+            dist/CabSpan.exe
+            dist/CabSpan-${{ github.ref_name }}.zip
+          generate_release_notes: true
+          body: |
+            ### 🧪 CabSpan ${{ github.ref_name }} — Experimental Community Preview
+            Multi-monitor FOV calculator, `.sii` generator, and 1-click Single-Screen / Multi-Monitor switcher for **American Truck Simulator** & **Euro Truck Simulator 2**.
+
+            - **Quick Start:** Download **`CabSpan-${{ github.ref_name }}.zip`** (or **`CabSpan.exe`** directly), place it in a folder on your PC, and run **`CabSpan.exe`**.
+            - **Safe Auto-Backup:** Your original single-monitor `config.cfg` is automatically backed up to `config.single_monitor.bak` before any changes are made, and can be restored anytime with 1 click via **↺ Undo / Restore Default**.
+
+            ---
+            **SHA-256 Checksum (`CabSpan.exe`):**
+            `SHA256: ${{ env.EXE_SHA256 }}`
