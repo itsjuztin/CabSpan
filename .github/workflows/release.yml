@@ -26,11 +26,35 @@ jobs:
         shell: pwsh
         run: |
           $tag = "${{ github.ref_name }}"
-          .\publish-release.ps1 -Version $tag -LocalOnly
+          $cleanVersion = $tag.TrimStart('v', 'V')
+          $distDir = "dist"
+
+          # 1. Update Version in CabSpan.csproj
+          $csproj = Get-Content "CabSpan.csproj" -Raw
+          $csproj = $csproj -replace '<Version>.*?</Version>', "<Version>$cleanVersion</Version>"
+          $csproj = $csproj -replace '<AssemblyVersion>.*?</AssemblyVersion>', "<AssemblyVersion>$cleanVersion.0</AssemblyVersion>"
+          $csproj = $csproj -replace '<FileVersion>.*?</FileVersion>', "<FileVersion>$cleanVersion.0</FileVersion>"
+          Set-Content -Path "CabSpan.csproj" -Value $csproj -Encoding UTF8
+
+          # 2. Publish single-file portable executable to dist/
+          dotnet publish CabSpan.csproj -c Release -r win-x64 --self-contained false `
+              -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true `
+              -o $distDir
+
+          # 3. Clean PDBs and package release zip
+          $exePath = Join-Path $distDir "CabSpan.exe"
+          Get-ChildItem -Path $distDir -Filter "*.pdb" -ErrorAction SilentlyContinue | Remove-Item -Force
+          $readmeTxtPath = Join-Path $distDir "README.txt"
+          Copy-Item -Path "README.md" -Destination $readmeTxtPath -Force
+          $zipPath = Join-Path $distDir "CabSpan-$tag.zip"
+          Compress-Archive -Path $exePath, $readmeTxtPath -DestinationPath $zipPath -Force
+
+          # 4. Verify math self-tests
           .\dist\CabSpan.exe --test-math
           if ($LASTEXITCODE -ne 0) { throw "Math self-test failed!" }
 
-          $exeHash = (Get-FileHash -Path ".\dist\CabSpan.exe" -Algorithm SHA256).Hash
+          # 5. Output SHA256 checksum to environment
+          $exeHash = (Get-FileHash -Path $exePath -Algorithm SHA256).Hash
           "EXE_SHA256=$exeHash" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Create GitHub Release

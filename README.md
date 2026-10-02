@@ -97,6 +97,21 @@ For fellow developers and sim-rig builders curious about what CabSpan does behin
 
 ---
 
+## 🛠️ Building from Source
+
+Prerequisites: [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+
+```powershell
+# Clone the repository
+git clone https://github.com/itsjuztin/CabSpan.git
+cd CabSpan
+
+# Build the portable single-file executable to dist\
+dotnet publish CabSpan.csproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -o dist
+```
+
+---
+
 ## 💜 Community, Help & Support
 
 Built by **Justin (`@itsjuztin`)** for the American Truck Simulator & Euro Truck Simulator 2 community.
